@@ -18,6 +18,7 @@ class TTTBoard extends Component {
     }
 
     this.writeToBoard = this.writeToBoard.bind(this);
+    this.getSquareStyle = this.getSquareStyle.bind(this);
     this.state = { gameboard: gameboard };
   }
 
@@ -25,18 +26,59 @@ class TTTBoard extends Component {
     console.log(rowIndex, colIndex);
   }
 
+  /**
+   * @param {Number} rowIndex - row number of square to be styled
+   * @param {Number} colIndex - column number of square to be styled
+   * @return {Object} Style to be applied to square
+   */
+  getSquareStyle(rowIndex, colIndex) {
+    const numRows = this.state.gameboard.length,
+        numCols = this.state.gameboard[0].length;
+
+    let style = {
+      height: '100%'
+    };
+
+    const lineStyle = '1px solid black';
+    // apply top border if not top row
+    if (rowIndex > 0) {
+      style.borderTop = lineStyle;
+    }
+
+    // apply bottom border if not bottom row
+    if (rowIndex < numRows-1) {
+      style.borderBottom = lineStyle;
+    }
+
+    // apply left border if not left column
+    if (colIndex > 0) {
+      style.borderLeft = lineStyle;
+    }
+
+    // apply right border if not right column
+    if (colIndex < numCols-1) {
+      style.borderRight = lineStyle;
+    }
+    return style;
+  }
+
   render() {
     let renderedBoard = this.state.gameboard.map((boardRow, rowIndex) => {
       return (
-        <div className="row" key={`row-${rowIndex}`}>
+        <div className="row" key={`row-${rowIndex}`} style={{height: '33.333%'}}>
           {boardRow.map((boardSquare, colIndex) => {
+            const squareStyle = this.getSquareStyle(rowIndex, colIndex);
             return (
-              <div className="col-xs-3" key={`col-${colIndex}`}>
+              <div
+                className="col-xs-3"
+                key={`col-${colIndex}`}
+                style={squareStyle}
+                onClick={() => this.writeToBoard(rowIndex, colIndex)} >
                 <BoardSquare
-                  onClick={() => this.writeToBoard(rowIndex, colIndex)}
                   value={boardSquare}
                   row={rowIndex}
-                  col={colIndex} />
+                  col={colIndex}
+                  />
               </div>
             )
           })}
@@ -45,7 +87,7 @@ class TTTBoard extends Component {
     });
 
     return (
-      <div className="container">
+      <div style={{height: '100vh', width: '100%'}}>
         {renderedBoard}
       </div>
     );

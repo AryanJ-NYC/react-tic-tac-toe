@@ -16,7 +16,7 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="container col-xs-offset-2">
         <ChoosePlayer onChoice={(playerChoice) => this.setPlayer(playerChoice)} />
         <TTTBoard currentPlayer={this.state.currentPlayer} />
       </div>
