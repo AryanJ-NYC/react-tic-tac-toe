@@ -7,6 +7,8 @@ class TTTBoard extends Component {
 
     const NUM_ROWS = 3;
     const NUM_COLS = 3;
+    this.CIRCLE = 'O';
+    this.EX = 'X';
     let gameboard = [];
 
     // gameboard initialization
@@ -19,11 +21,25 @@ class TTTBoard extends Component {
 
     this.writeToBoard = this.writeToBoard.bind(this);
     this.getSquareStyle = this.getSquareStyle.bind(this);
-    this.state = { gameboard: gameboard };
+    this.toggleTurn = this.toggleTurn.bind(this);
+    this.state = {
+      gameboard: gameboard,
+      currentPlayer: this.props.currentPlayer
+    };
   }
 
   writeToBoard(rowIndex, colIndex) {
-    console.log(rowIndex, colIndex);
+    let gameboard = this.state.gameboard;
+    if (gameboard[rowIndex][colIndex] === '') {
+      gameboard[rowIndex][colIndex] = this.state.currentPlayer;
+      this.toggleTurn();
+      this.setState({gameboard: gameboard});
+    }
+  }
+
+  toggleTurn() {
+    const currentPlayer = (this.state.currentPlayer === this.CIRCLE) ? this.EX : this.CIRCLE;
+    this.setState({ currentPlayer: currentPlayer });
   }
 
   /**
@@ -70,7 +86,7 @@ class TTTBoard extends Component {
             const squareStyle = this.getSquareStyle(rowIndex, colIndex);
             return (
               <div
-                className="col-xs-3"
+                className="col-xs-3 text-center"
                 key={`col-${colIndex}`}
                 style={squareStyle}
                 onClick={() => this.writeToBoard(rowIndex, colIndex)} >
