@@ -12,11 +12,15 @@ class App extends Component {
     this.setPlayer = this.setPlayer.bind(this);
     this.gameOver = this.gameOver.bind(this);
     this.toggleTurn = this.toggleTurn.bind(this);
+    this.newGame = this.newGame.bind(this);
+    this.startNewGame = this.startNewGame.bind(this);
+
     this.state = {
       humanPlayer: null,
       computerPlayer: null,
       score: {'X': 0, 'O': 0},
-      showGameOverModal: false
+      showGameOverModal: false,
+      triggerNewGame: false
     };
   }
 
@@ -37,19 +41,33 @@ class App extends Component {
     this.setState({ currentPlayer: currentPlayer });
   }
 
+  newGame() {
+    this.setState({triggerNewGame: true});
+  }
+
+  startNewGame() {
+    this.setState({
+      triggerNewGame: false,
+      showGameOverModal: false
+    });
+  }
+
   render() {
     return (
       <div className="container">
         <ChoosePlayer onChoice={(playerChoice) => this.setPlayer(playerChoice)} />
         <GameOver
           showGameOverModal={this.state.showGameOverModal}
-          winner={this.state.winner} />
+          winner={this.state.winner}
+          newGame={this.newGame} />
         {this.state.humanPlayer &&
         <TTTBoard
           humanPlayer={this.state.humanPlayer}
           computerPlayer={this.state.computerPlayer}
           gameOver={(winner) => this.gameOver(winner)}
-          toggleTurn={this.toggleTurn} />}
+          toggleTurn={this.toggleTurn}
+          newGame={this.state.triggerNewGame}
+          startNewGame={this.startNewGame} />}
       </div>
     );
   }

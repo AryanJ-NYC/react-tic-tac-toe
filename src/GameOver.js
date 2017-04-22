@@ -13,6 +13,10 @@ class GameOver extends Component {
         <Modal.Body>
           <h4>{message}</h4>
         </Modal.Body>
+
+        <Modal.Footer>
+          <button className="btn" onClick={this.props.newGame}>New Game</button>
+        </Modal.Footer>
       </Modal>
     )
   }

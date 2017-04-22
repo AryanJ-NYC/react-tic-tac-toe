@@ -7,16 +7,16 @@ class TTTBoard extends Component {
   constructor(props) {
     super(props);
 
-    const NUM_ROWS = 3;
-    const NUM_COLS = 3;
+    this.NUM_ROWS = 3;
+    this.NUM_COLS = 3;
     this.CIRCLE = 'O';
     this.EX = 'X';
 
     let gameboard = [];
     // gameboard initialization
-    for (let i = 0; i < NUM_ROWS; ++i) {
+    for (let i = 0; i < this.NUM_ROWS; ++i) {
       gameboard.push([]);
-      for (let j = 0; j < NUM_COLS; ++j) {
+      for (let j = 0; j < this.NUM_COLS; ++j) {
         gameboard[i].push('');
       }
     }
@@ -186,6 +186,21 @@ class TTTBoard extends Component {
   }
 
   render() {
+    if (this.props.newGame) {
+      let gameboard = [];
+      // gameboard initialization
+      for (let i = 0; i < this.NUM_ROWS; ++i) {
+        gameboard.push([]);
+        for (let j = 0; j < this.NUM_COLS; ++j) {
+          gameboard[i].push('');
+        }
+      }
+      this.setState({
+        gameboard: gameboard,
+        currentPlayer: this.props.humanPlayer
+      });
+      this.props.startNewGame();
+    }
     let renderedBoard = this.state.gameboard.map((boardRow, rowIndex) => {
       return (
         <div className="row" key={`row-${rowIndex}`} style={{height: '33.333%'}}>
