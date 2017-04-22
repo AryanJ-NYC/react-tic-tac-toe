@@ -31,6 +31,11 @@ class TTTBoard extends Component {
     };
   }
 
+  /**
+   * @param rowIndex
+   * @param colIndex
+   * Writes to state's gameboard. Computer goes directly after human moves
+   */
   writeToBoard(rowIndex, colIndex) {
     let gameboard = this.state.gameboard.slice();
     if (gameboard[rowIndex][colIndex] === '') {
@@ -64,6 +69,13 @@ class TTTBoard extends Component {
     }
   }
 
+  /**
+   * @param rowIndex
+   * @param colIndex
+   * @param board
+   * @param currentPlayer
+   * @return {boolean} - Returns true if move at [rowIndex, colIndex] on board by currentPlayer wins the game. False otherwise
+   */
   static checkWinner(rowIndex, colIndex, board, currentPlayer) {
     // check for column win
     for (let i = 0; i < board.length; ++i) {
@@ -124,6 +136,9 @@ class TTTBoard extends Component {
     return emptySquares;
   }
 
+  /**
+   * @return {boolean} - True if state's gameboard is full. False otherwise.
+   */
   boardIsFull() {
     const board = this.state.gameboard;
     for (let boardRow of board) {

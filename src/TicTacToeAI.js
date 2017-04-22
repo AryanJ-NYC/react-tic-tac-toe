@@ -2,6 +2,11 @@ import update from 'immutability-helper';
 import TTTBoard from './TTTBoard';
 
 export class TicTacToeAI {
+  /**
+   * @param computerPlayer - X or O, depending on human's choice of character
+   * @param board - Current board representation as a 2D array
+   * @return {Array} - An array of [row, col] where row and column represent the next best move for computer
+   */
   static AIMove(computerPlayer, board) {
     const humanPlayer = (computerPlayer === 'X') ? 'O' : 'X';
     // check all moves in empty squares
@@ -38,6 +43,11 @@ export class TicTacToeAI {
     return TicTacToeAI.getBestMove(board, computerPlayer);
   }
 
+  /**
+   * @param board - Current board representation as a 2D array
+   * @param player - X or O
+   * @return {Array} Return an array of [row, col] where row and column represent the next best move for player
+   */
   static getBestMove(board, player) {
     const playerToScore = player;
     const NUM_TRIALS = 500,
@@ -51,17 +61,20 @@ export class TicTacToeAI {
 
     for (let i = 0; i < NUM_TRIALS; ++i) {
       let boardCopy = board.slice();
-      // randomly choose a square then randomly play a board
-      for (let j = 0; j < 9; ++j) {
+      while (true) {
         const emptySquares = TTTBoard.getEmptySquares(boardCopy);
+
+        // simulate a game until no squares are empty
         if (emptySquares.length > 0) {
+          // chose a random square to move on
           const randomEmptySquare = emptySquares[Math.floor(Math.random() * emptySquares.length)],
                 randomRow = randomEmptySquare[0],
                 randomCol = randomEmptySquare[1],
                 playerToCheck = player;
           boardCopy = update(boardCopy, {[randomRow]: {$splice: [[randomCol, 1, playerToCheck]]}});
           player = (player === 'X') ? 'O' : 'X';
-          // if there's a winner, score the board
+
+          // if there's a winner, score the board and break out of while loop
           if (TTTBoard.checkWinner(randomRow, randomCol, boardCopy, playerToCheck)) {
             // if playerToScore won, add value to their moves. If they lost, detract value from their moves
             const scoreDiff = (playerToCheck === playerToScore) ? WIN_WEIGHT : LOSS_WEIGHT;
@@ -79,6 +92,7 @@ export class TicTacToeAI {
         }
       }
     }
+
     // return the indices of empty square with highest value (as per scorecard)
     const emptySquares = TTTBoard.getEmptySquares(board);
     let maxScore = Number.NEGATIVE_INFINITY;
