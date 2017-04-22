@@ -35,8 +35,7 @@ export class TicTacToeAI {
     }
 
     // if no next move can win for either, use Monte Carlo simulation to find best move
-    const bestMove = TicTacToeAI.getBestMove(board, computerPlayer);
-    return bestMove;
+    return TicTacToeAI.getBestMove(board, computerPlayer);
   }
 
   static getBestMove(board, player) {

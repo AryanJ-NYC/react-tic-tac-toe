@@ -36,11 +36,18 @@ class TTTBoard extends Component {
     if (gameboard[rowIndex][colIndex] === '') {
       gameboard = update(gameboard, {[rowIndex]: {$splice: [[colIndex, 1, this.state.currentPlayer]]}});
 
-      this.setState({ gameboard: gameboard });
       if (TTTBoard.checkWinner(rowIndex, colIndex, gameboard, this.state.currentPlayer)) {
         this.props.gameOver(this.state.currentPlayer);
         return;
       }
+
+      this.setState({ gameboard: gameboard }, () => {
+        if (this.boardIsFull()) {
+          this.props.gameOver('D');
+          return;
+        }
+      });
+
       const nextPlayer = (this.state.currentPlayer === this.props.humanPlayer) ? this.props.computerPlayer : this.props.humanPlayer;
       this.setState({ currentPlayer: nextPlayer }, () => {
         // if human went, computer goes
@@ -115,6 +122,18 @@ class TTTBoard extends Component {
       }
     }
     return emptySquares;
+  }
+
+  boardIsFull() {
+    const board = this.state.gameboard;
+    for (let boardRow of board) {
+      for (let boardSquare of boardRow) {
+        if (boardSquare === '') {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
