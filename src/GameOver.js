@@ -10,9 +10,7 @@ class GameOver extends Component {
         </Modal.Header>
 
         <Modal.Body>
-          <h4>Score</h4>
-          <p>Human: {this.props.humanScore}</p>
-          <p>Computer: {this.props.computerScore}</p>
+          <h4>{this.props.winner} Wins!</h4>
         </Modal.Body>
       </Modal>
     )

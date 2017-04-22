@@ -14,28 +14,17 @@ class App extends Component {
     this.toggleTurn = this.toggleTurn.bind(this);
     this.state = {
       currentPlayer: null,
-      humanPlayer: null,
-      computerPlayer: null,
       score: {'X': 0, 'O': 0},
       showGameOverModal: false
     };
   }
 
   setPlayer(playerChoice) {
-    const computerPlayer = (playerChoice === this.CIRCLE) ? this.EX : this.CIRCLE;
-    this.setState({
-      currentPlayer: playerChoice,
-      humanPlayer: playerChoice,
-      computerPlayer: computerPlayer
-    });
+    this.setState({currentPlayer: playerChoice});
   }
 
   gameOver(winner) {
-    this.setState(prevState => {
-      prevState.score[winner] += 1;
-      prevState.showGameOverModal = true;
-      return prevState;
-    });
+    this.setState({showGameOverModal: true, winner: winner});
   }
 
   toggleTurn() {
@@ -49,8 +38,8 @@ class App extends Component {
         <ChoosePlayer onChoice={(playerChoice) => this.setPlayer(playerChoice)} />
         <GameOver
           showGameOverModal={this.state.showGameOverModal}
-          humanScore={this.state.score[this.state.humanPlayer]}
-          computerScore={this.state.score[this.state.computerPlayer]} />
+          winner={this.state.winner}
+        />
         <TTTBoard
           currentPlayer={this.state.currentPlayer}
           gameOver={(winner) => this.gameOver(winner)}
