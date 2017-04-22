@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import update from 'immutability-helper';
 import BoardSquare from './BoardSquare';
+import { TicTacToeAI } from './TicTacToeAI';
 
 class TTTBoard extends Component {
   constructor(props) {
@@ -9,8 +11,8 @@ class TTTBoard extends Component {
     const NUM_COLS = 3;
     this.CIRCLE = 'O';
     this.EX = 'X';
-    let gameboard = [];
 
+    let gameboard = [];
     // gameboard initialization
     for (let i = 0; i < NUM_ROWS; ++i) {
       gameboard.push([]);
@@ -20,74 +22,99 @@ class TTTBoard extends Component {
     }
 
     this.writeToBoard = this.writeToBoard.bind(this);
-    this.checkWinner = this.checkWinner.bind(this);
+    TTTBoard.checkWinner = TTTBoard.checkWinner.bind(this);
     this.getSquareStyle = this.getSquareStyle.bind(this);
 
     this.state = {
       gameboard: gameboard,
-      currentPlayer: this.props.currentPlayer
+      currentPlayer: this.props.humanPlayer
     };
   }
 
   writeToBoard(rowIndex, colIndex) {
-    let gameboard = this.state.gameboard;
+    let gameboard = this.state.gameboard.slice();
     if (gameboard[rowIndex][colIndex] === '') {
-      gameboard[rowIndex][colIndex] = this.props.currentPlayer;
-      this.setState({ gameboard: gameboard} );
-      this.checkWinner(rowIndex, colIndex);
+      gameboard = update(gameboard, {[rowIndex]: {$splice: [[colIndex, 1, this.state.currentPlayer]]}});
 
-      this.props.toggleTurn();
+      this.setState({ gameboard: gameboard });
+      if (TTTBoard.checkWinner(rowIndex, colIndex, gameboard, this.state.currentPlayer)) {
+        this.props.gameOver(this.state.currentPlayer);
+        return;
+      }
+      const nextPlayer = (this.state.currentPlayer === this.props.humanPlayer) ? this.props.computerPlayer : this.props.humanPlayer;
+      this.setState({ currentPlayer: nextPlayer }, () => {
+        // if human went, computer goes
+        if (this.state.currentPlayer === this.props.computerPlayer) {
+          const AIMove = TicTacToeAI.AIMove(this.props.computerPlayer, gameboard.slice());
+
+          if (AIMove) {
+            const rowIndex = AIMove[0],
+                colIndex = AIMove[1];
+            this.writeToBoard(rowIndex, colIndex);
+          }
+        }
+      });
     }
   }
 
-  checkWinner(rowIndex, colIndex) {
-    const gameboard = this.state.gameboard;
-
+  static checkWinner(rowIndex, colIndex, board, currentPlayer) {
     // check for column win
-    for (let i = 0; i < gameboard.length; ++i) {
-      if (gameboard[i][colIndex] !== this.props.currentPlayer) {
+    for (let i = 0; i < board.length; ++i) {
+      if (board[i][colIndex] !== currentPlayer) {
         break;
       }
       // if i gets to end without breaking, we have a winner
-      if (i === gameboard.length-1) {
-        this.props.gameOver(this.props.currentPlayer);
+      if (i === board.length-1) {
+        return true;
       }
     }
 
     // check for row win
-    for (let j = 0; j < gameboard[0].length; ++j) {
-      if (gameboard[rowIndex][j] !== this.props.currentPlayer) {
+    for (let j = 0; j < board[0].length; ++j) {
+      if (board[rowIndex][j] !== currentPlayer) {
         break;
       }
       // if j gets to end without breaking, we have a winner
-      if (j === gameboard[0].length-1) {
-        this.props.gameOver(this.props.currentPlayer);
+      if (j === board[0].length-1) {
+        return true;
       }
     }
 
     // check for diagonal wins
     if (rowIndex === colIndex) {
-      for (let i = 0; i < gameboard.length; ++i) {
-        if (gameboard[i][i] !== this.props.currentPlayer) {
+      for (let i = 0; i < board.length; ++i) {
+        if (board[i][i] !== currentPlayer) {
           break;
         }
-        if (i === gameboard.length-1) {
-          this.props.gameOver(this.props.currentPlayer);
+        if (i === board.length-1) {
+          return true;
         }
       }
     }
 
-    if (rowIndex + colIndex === gameboard.length-1) {
-      for (let i = 0; i < gameboard.length; ++i) {
-        if (gameboard[i][gameboard.length-1-i] !== this.props.currentPlayer) {
+    if (rowIndex + colIndex === board.length-1) {
+      for (let i = 0; i < board.length; ++i) {
+        if (board[i][board.length-1-i] !== currentPlayer) {
           break;
         }
-        if (i === gameboard.length-1) {
-          this.props.gameOver(this.props.currentPlayer);
+        if (i === board.length-1) {
+          return true;
         }
       }
     }
+    return false;
+  }
 
+  static getEmptySquares(board) {
+    const emptySquares = [];
+    for (let i = 0; i < board.length; ++i) {
+      for (let j = 0; j < board[i].length; ++j) {
+        if (board[i][j] === '') {
+          emptySquares.push([i, j]);
+        }
+      }
+    }
+    return emptySquares;
   }
 
   /**
@@ -127,7 +154,6 @@ class TTTBoard extends Component {
   }
 
   render() {
-    if (this.props.currentPlayer === '') return null;
     let renderedBoard = this.state.gameboard.map((boardRow, rowIndex) => {
       return (
         <div className="row" key={`row-${rowIndex}`} style={{height: '33.333%'}}>
@@ -143,7 +169,7 @@ class TTTBoard extends Component {
                   value={boardSquare}
                   row={rowIndex}
                   col={colIndex}
-                  />
+                />
               </div>
             )
           })}
