@@ -40,18 +40,16 @@ class TTTBoard extends Component {
     let gameboard = this.state.gameboard.slice();
     if (gameboard[rowIndex][colIndex] === '') {
       gameboard = update(gameboard, {[rowIndex]: {$splice: [[colIndex, 1, this.state.currentPlayer]]}});
+      this.setState({ gameboard: gameboard }, () => {
+        if (this.boardIsFull()) {
+          this.props.gameOver('D');
+        }
+      });
 
       if (TTTBoard.checkWinner(rowIndex, colIndex, gameboard, this.state.currentPlayer)) {
         this.props.gameOver(this.state.currentPlayer);
         return;
       }
-
-      this.setState({ gameboard: gameboard }, () => {
-        if (this.boardIsFull()) {
-          this.props.gameOver('D');
-          return;
-        }
-      });
 
       const nextPlayer = (this.state.currentPlayer === this.props.humanPlayer) ? this.props.computerPlayer : this.props.humanPlayer;
       this.setState({ currentPlayer: nextPlayer }, () => {
