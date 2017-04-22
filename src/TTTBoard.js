@@ -20,8 +20,9 @@ class TTTBoard extends Component {
     }
 
     this.writeToBoard = this.writeToBoard.bind(this);
+    this.checkWinner = this.checkWinner.bind(this);
     this.getSquareStyle = this.getSquareStyle.bind(this);
-    this.toggleTurn = this.toggleTurn.bind(this);
+
     this.state = {
       gameboard: gameboard,
       currentPlayer: this.props.currentPlayer
@@ -31,15 +32,62 @@ class TTTBoard extends Component {
   writeToBoard(rowIndex, colIndex) {
     let gameboard = this.state.gameboard;
     if (gameboard[rowIndex][colIndex] === '') {
-      gameboard[rowIndex][colIndex] = this.state.currentPlayer;
-      this.toggleTurn();
-      this.setState({gameboard: gameboard});
+      gameboard[rowIndex][colIndex] = this.props.currentPlayer;
+      this.setState({ gameboard: gameboard} );
+      this.checkWinner(rowIndex, colIndex);
+
+      this.props.toggleTurn();
     }
   }
 
-  toggleTurn() {
-    const currentPlayer = (this.state.currentPlayer === this.CIRCLE) ? this.EX : this.CIRCLE;
-    this.setState({ currentPlayer: currentPlayer });
+  checkWinner(rowIndex, colIndex) {
+    const gameboard = this.state.gameboard;
+
+    // check for column win
+    for (let i = 0; i < gameboard.length; ++i) {
+      if (gameboard[i][colIndex] !== this.props.currentPlayer) {
+        break;
+      }
+      // if i gets to end without breaking, we have a winner
+      if (i === gameboard.length-1) {
+        this.props.gameOver(this.props.currentPlayer);
+      }
+    }
+
+    // check for row win
+    for (let j = 0; j < gameboard[0].length; ++j) {
+      if (gameboard[rowIndex][j] !== this.props.currentPlayer) {
+        break;
+      }
+      // if j gets to end without breaking, we have a winner
+      if (j === gameboard[0].length-1) {
+        this.props.gameOver(this.props.currentPlayer);
+      }
+    }
+
+    // check for diagonal wins
+    if (rowIndex === colIndex) {
+      for (let i = 0; i < gameboard.length; ++i) {
+        if (gameboard[i][i] !== this.props.currentPlayer) {
+          break;
+        }
+        if (i === gameboard.length-1) {
+          this.props.gameOver(this.props.currentPlayer);
+        }
+      }
+    }
+
+    if (rowIndex + colIndex === gameboard.length-1) {
+      for (let i = 0; i < gameboard.length; ++i) {
+        if (gameboard[i][gameboard.length-1-i] !== this.props.currentPlayer) {
+          break;
+        }
+        if (i === gameboard.length-1) {
+          this.props.gameOver(this.props.currentPlayer);
+        }
+      }
+    }
+
   }
 
   /**
@@ -79,6 +127,7 @@ class TTTBoard extends Component {
   }
 
   render() {
+    if (this.props.currentPlayer === '') return null;
     let renderedBoard = this.state.gameboard.map((boardRow, rowIndex) => {
       return (
         <div className="row" key={`row-${rowIndex}`} style={{height: '33.333%'}}>
@@ -103,7 +152,7 @@ class TTTBoard extends Component {
     });
 
     return (
-      <div style={{height: '100vh', width: '100%'}}>
+      <div style={{height: '100vh'}}>
         {renderedBoard}
       </div>
     );

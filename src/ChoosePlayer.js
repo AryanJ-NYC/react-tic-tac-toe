@@ -13,7 +13,7 @@ class ChoosePlayer extends Component {
 
   onClick(playerChoice) {
     this.props.onChoice(playerChoice);
-    this.state = { showModal: false };
+    this.setState({ showModal: false });
   }
 
   render() {
