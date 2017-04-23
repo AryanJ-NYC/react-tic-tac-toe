@@ -190,20 +190,24 @@ class TTTBoard extends Component {
     return style;
   }
 
+  resetGame() {
+    let gameboard = [];
+    // gameboard initialization
+    for (let i = 0; i < this.NUM_ROWS; ++i) {
+      gameboard.push([]);
+      for (let j = 0; j < this.NUM_COLS; ++j) {
+        gameboard[i].push('');
+      }
+    }
+    this.setState({
+      gameboard: gameboard,
+      currentPlayer: this.props.humanPlayer
+    });
+  }
+
   render() {
     if (this.props.newGame) {
-      let gameboard = [];
-      // gameboard initialization
-      for (let i = 0; i < this.NUM_ROWS; ++i) {
-        gameboard.push([]);
-        for (let j = 0; j < this.NUM_COLS; ++j) {
-          gameboard[i].push('');
-        }
-      }
-      this.setState({
-        gameboard: gameboard,
-        currentPlayer: this.props.humanPlayer
-      });
+      this.resetGame();
       this.props.startNewGame();
     }
     let renderedBoard = this.state.gameboard.map((boardRow, rowIndex) => {
