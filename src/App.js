@@ -37,7 +37,13 @@ class App extends Component {
    * Displays game over modal
    */
   gameOver(winner) {
-    this.setState({showGameOverModal: true, winner: winner, score: this.state.score[winner]+1});
+    const score = this.state.score;
+    // if it's not a draw, increase score
+    if (winner !== 'D') {
+      score[winner] += 1;
+    }
+
+    this.setState({ showGameOverModal: true, winner: winner, score: score });
   }
 
   toggleTurn() {
@@ -70,7 +76,8 @@ class App extends Component {
         <GameOver
           showGameOverModal={this.state.showGameOverModal}
           winner={this.state.winner}
-          newGame={this.newGame} />
+          newGame={this.newGame}
+          score={this.state.score} />
         {this.state.humanPlayer &&
         <TTTBoard
           humanPlayer={this.state.humanPlayer}

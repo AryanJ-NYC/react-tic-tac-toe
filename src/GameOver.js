@@ -12,6 +12,8 @@ class GameOver extends Component {
 
         <Modal.Body>
           <h4>{message}</h4>
+          <p>O Score: {this.props.score['O']}</p>
+          <p>X Score: {this.props.score['X']}</p>
         </Modal.Body>
 
         <Modal.Footer>
