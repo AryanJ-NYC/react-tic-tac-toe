@@ -12,8 +12,8 @@ class TTTBoard extends Component {
     this.CIRCLE = 'O';
     this.EX = 'X';
 
-    let gameboard = [];
     // gameboard initialization
+    let gameboard = [];
     for (let i = 0; i < this.NUM_ROWS; ++i) {
       gameboard.push([]);
       for (let j = 0; j < this.NUM_COLS; ++j) {
@@ -27,6 +27,7 @@ class TTTBoard extends Component {
     this.computerMove = this.computerMove.bind(this);
 
     this.state = {
+      firstMove: this.props.humanPlayer,
       gameboard: gameboard,
       currentPlayer: this.props.humanPlayer
     };
@@ -49,7 +50,6 @@ class TTTBoard extends Component {
 
       if (TTTBoard.checkWinner(rowIndex, colIndex, gameboard, this.state.currentPlayer)) {
         this.props.gameOver(this.state.currentPlayer);
-        return;
       }
 
       const nextPlayer = (this.state.currentPlayer === this.props.humanPlayer) ? this.props.computerPlayer : this.props.humanPlayer;
@@ -64,10 +64,9 @@ class TTTBoard extends Component {
 
   computerMove() {
     const AIMove = TicTacToeAI.AIMove(this.props.computerPlayer, this.state.gameboard.slice());
-
     if (AIMove) {
       const rowIndex = AIMove[0],
-          colIndex = AIMove[1];
+            colIndex = AIMove[1];
       this.writeToBoard(rowIndex, colIndex);
     }
   }
@@ -191,17 +190,20 @@ class TTTBoard extends Component {
   }
 
   resetGame() {
-    let gameboard = [];
     // gameboard initialization
+    let gameboard = [];
     for (let i = 0; i < this.NUM_ROWS; ++i) {
       gameboard.push([]);
       for (let j = 0; j < this.NUM_COLS; ++j) {
         gameboard[i].push('');
       }
     }
-    this.setState({
-      gameboard: gameboard,
-      currentPlayer: this.props.humanPlayer
+
+    // set gameboard; computer moves if their move
+    this.setState({ gameboard: gameboard },  () => {
+      if (this.state.currentPlayer === this.props.computerPlayer) {
+        this.computerMove();
+      }
     });
   }
 
