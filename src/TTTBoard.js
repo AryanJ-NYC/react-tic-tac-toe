@@ -24,6 +24,7 @@ class TTTBoard extends Component {
     this.writeToBoard = this.writeToBoard.bind(this);
     TTTBoard.checkWinner = TTTBoard.checkWinner.bind(this);
     this.getSquareStyle = this.getSquareStyle.bind(this);
+    this.computerMove = this.computerMove.bind(this);
 
     this.state = {
       gameboard: gameboard,
@@ -55,15 +56,19 @@ class TTTBoard extends Component {
       this.setState({ currentPlayer: nextPlayer }, () => {
         // if human went, computer goes
         if (this.state.currentPlayer === this.props.computerPlayer) {
-          const AIMove = TicTacToeAI.AIMove(this.props.computerPlayer, gameboard.slice());
-
-          if (AIMove) {
-            const rowIndex = AIMove[0],
-                colIndex = AIMove[1];
-            this.writeToBoard(rowIndex, colIndex);
-          }
+          this.computerMove();
         }
       });
+    }
+  }
+
+  computerMove() {
+    const AIMove = TicTacToeAI.AIMove(this.props.computerPlayer, this.state.gameboard.slice());
+
+    if (AIMove) {
+      const rowIndex = AIMove[0],
+          colIndex = AIMove[1];
+      this.writeToBoard(rowIndex, colIndex);
     }
   }
 
@@ -156,7 +161,7 @@ class TTTBoard extends Component {
    */
   getSquareStyle(rowIndex, colIndex) {
     const numRows = this.state.gameboard.length,
-        numCols = this.state.gameboard[0].length;
+          numCols = this.state.gameboard[0].length;
 
     let style = {
       height: '100%'
