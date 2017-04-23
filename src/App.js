@@ -32,8 +32,12 @@ class App extends Component {
     });
   }
 
+  /**
+   * @param winner - winner of the last game
+   * Displays game over modal
+   */
   gameOver(winner) {
-    this.setState({showGameOverModal: true, winner: winner});
+    this.setState({showGameOverModal: true, winner: winner, score: this.state.score[winner]+1});
   }
 
   toggleTurn() {
@@ -41,10 +45,17 @@ class App extends Component {
     this.setState({ currentPlayer: currentPlayer });
   }
 
+  /**
+   * Triggers a new game. triggerNewGame is a boolean passed as a property to TTTBoard. When true, TTTBoard will reset.
+   * This method is passed as property to and called by the GameOver modal.
+   */
   newGame() {
-    this.setState({triggerNewGame: true});
+    this.setState({ triggerNewGame: true });
   }
 
+  /**
+   * Clears the gameOver modal. Passed as property to and called by TTTBoard.
+   */
   startNewGame() {
     this.setState({
       triggerNewGame: false,
